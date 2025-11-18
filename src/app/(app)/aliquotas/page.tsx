@@ -1,5 +1,5 @@
 
-"use client";
+'use client';
 
 import { useState, useEffect } from 'react';
 import { collection, onSnapshot, query, orderBy, doc, deleteDoc } from 'firebase/firestore';
@@ -16,6 +16,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Badge } from '@/components/ui/badge';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 export default function AliquotasPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -65,11 +67,10 @@ export default function AliquotasPage() {
         setLoading(false);
     }, (error) => {
         console.error("Error fetching aliquotas: ", error);
-        toast({
-            variant: "destructive",
-            title: "Erro ao buscar alíquotas",
-            description: "Não foi possível carregar a lista de alíquotas."
-        });
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+            path: aliquotasRef.path,
+            operation: 'list'
+        }));
         setLoading(false);
     });
 
@@ -89,18 +90,22 @@ export default function AliquotasPage() {
 
   const handleDeleteAliquota = async (aliquotaId: string) => {
     if (!user || !activeCompany) return;
-    try {
-      await deleteDoc(doc(db, `users/${user.uid}/companies/${activeCompany.id}/aliquotas`, aliquotaId));
-      toast({
-        title: 'Alíquota excluída!',
-        description: 'A alíquota foi removida com sucesso.',
+    const docRef = doc(db, `users/${user.uid}/companies/${activeCompany.id}/aliquotas`, aliquotaId);
+    
+    deleteDoc(docRef)
+      .then(() => {
+        toast({
+          title: 'Alíquota excluída!',
+          description: 'A alíquota foi removida com sucesso.',
+        });
+      })
+      .catch((error) => {
+        console.error("Error deleting aliquota:", error);
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+            path: docRef.path,
+            operation: 'delete'
+        }));
       });
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Erro ao excluir alíquota',
-      });
-    }
   };
 
   const totalPages = Math.ceil(aliquotas.length / itemsPerPage);
