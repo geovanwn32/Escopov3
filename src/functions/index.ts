@@ -2,7 +2,7 @@
 import * as functions from 'firebase-functions';
 import { adminApp } from '../lib/firebase-admin-config'; // Ensure this path is correct
 import { getAuth } from 'firebase-admin/auth';
-import { getFirestore } from 'firebase-admin/firestore';
+import { getFirestore, DocumentSnapshot } from 'firebase-admin/firestore';
 import { getStorage } from 'firebase-admin/storage';
 import * as dotenv from 'dotenv';
 dotenv.config();
@@ -121,7 +121,7 @@ export const backupCompanyData = functions
                 const collectionRef = firestore.collection(`users/${userId}/companies/${companyId}/${collectionName}`);
                 const snapshot = await collectionRef.get();
                 if (!snapshot.empty) {
-                    backupData[collectionName] = snapshot.docs.map((doc: FirebaseFirestore.QueryDocumentSnapshot) => ({ id: doc.id, ...doc.data() }));
+                    backupData[collectionName] = snapshot.docs.map((doc: DocumentSnapshot) => ({ id: doc.id, ...doc.data() }));
                 }
             }
             
