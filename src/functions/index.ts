@@ -4,8 +4,6 @@ import { adminApp } from '../lib/firebase-admin-config'; // Ensure this path is 
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore, DocumentSnapshot } from 'firebase-admin/firestore';
 import { getStorage } from 'firebase-admin/storage';
-import * as dotenv from 'dotenv';
-dotenv.config();
 
 // Ensure the admin app is initialized before using it.
 if (!adminApp) {
@@ -142,3 +140,4 @@ export const backupCompanyData = functions
     });
 
     
+

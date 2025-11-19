@@ -17,6 +17,11 @@ const firebaseConfig = {
     measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
+// Verificação para garantir que as chaves não estão vazias, o que causa o erro.
+if (!firebaseConfig.apiKey) {
+    throw new Error("A chave de API do Firebase (NEXT_PUBLIC_FIREBASE_API_KEY) não foi definida. Verifique seu arquivo .env ou as variáveis de ambiente do seu servidor.");
+}
+
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
 const db = getFirestore(app);
