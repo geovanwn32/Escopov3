@@ -8,7 +8,7 @@
     "path": false
   },
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev -p 9002",
     "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
     "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
     "build:next": "next build",
@@ -57,7 +57,7 @@
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.8.2",
     "lucide-react": "^0.475.0",
-    "next": "^14.2.4",
+    "next": "^15.0.0",
     "next-themes": "^0.3.0",
     "patch-package": "^8.0.0",
     "pdf-parse": "^1.1.1",
